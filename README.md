@@ -14,47 +14,47 @@ Flight pricing is notoriously dynamic, heavily skewed, and often feels completel
 ## 🗄️ The Data: No Pre-Packaged Datasets Here
 I didn't want to use a clean, outdated Kaggle dataset. To build a model that understands the *real* market, I had to source the data myself. 
 
-* [cite_start]**The Pipeline:** I built a custom data extraction pipeline using a Python scraper and local Playwright compute to bypass proxies [cite: 1857-1858]. 
-* [cite_start]**The Scope:** I pulled over **100,000 live flight records** targeting 8 major US domestic hubs (JFK, LAX, ORD, etc.), forecasting up to 120 days into the future [cite: 1859-1861].
-* [cite_start]**The Result:** A highly optimized ~15.0 MB dataset containing 24 core physical and temporal features [cite: 1862-1863].
+* **The Pipeline:** I built a custom data extraction pipeline using a Python scraper and local Playwright compute to bypass proxies . 
+* **The Scope:** I pulled over **100,000 live flight records** targeting 8 major US domestic hubs (JFK, LAX, ORD, etc.), forecasting up to 120 days into the future .
+* **The Result:** A highly optimized ~15.0 MB dataset containing 24 core physical and temporal features.
 
 ---
 
 ## ⚙️ Under the Hood: Feature Engineering
-Raw data isn't enough to capture complex market swings. [cite_start]I expanded the baseline dataset by engineering **18 custom mathematical signals**[cite: 753]:
+Raw data isn't enough to capture complex market swings.I expanded the baseline dataset by engineering **18 custom mathematical signals**
 
-* [cite_start]**Cyclical Time:** I used sine and cosine transformations to map time [cite: 759-762]. This helps the AI understand that Sunday night wraps around seamlessly into Monday morning, rather than treating them as a linear line. 
-* [cite_start]**Interaction Terms:** I created compounded features (like `Dist_x_Stops` and `Weekend_Holiday`) to isolate specific surge effects [cite: 773-777].
-* **Leak-Proof Encoding:** To prevent the model from just "memorizing" expensive routes or airlines, I completely avoided naive target encoding. [cite_start]Instead, I implemented **K-Fold Target Encoding**[cite: 755]. This ensures the algorithm actually learns the underlying patterns without data leakage.
+* **Cyclical Time:** I used sine and cosine transformations to map time . This helps the AI understand that Sunday night wraps around seamlessly into Monday morning, rather than treating them as a linear line. 
+* **Interaction Terms:** I created compounded features (like `Dist_x_Stops` and `Weekend_Holiday`) to isolate specific surge effects.
+* **Leak-Proof Encoding:** To prevent the model from just "memorizing" expensive routes or airlines, I completely avoided naive target encoding. Instead, I implemented **K-Fold Target Encoding**. This ensures the algorithm actually learns the underlying patterns without data leakage.
 
 ---
 
 ## 🧠 The Algorithm Arena 
 
-[cite_start]I started by putting four baseline heavyweights into the arena: Random Forest, CatBoost, LightGBM, and XGBoost [cite: 838-854]. XGBoost and LightGBM emerged as the top contenders.
+I started by putting four baseline heavyweights into the arena: Random Forest, CatBoost, LightGBM, and XGBoost . XGBoost and LightGBM emerged as the top contenders.
 
 ### Bayesian Optimization
-To get the absolute best performance, I didn't just blindly guess the hyperparameter settings. [cite_start]I deployed **Optuna** to run 50 Bayesian optimization trials[cite: 892]. [cite_start]By using Tree-structured Parzen Estimators (TPE), the algorithm intelligently navigated learning rates, maximum tree depths, and L1/L2 regularization to find the mathematically optimal configurations [cite: 893, 905-909].
+To get the absolute best performance, I didn't just blindly guess the hyperparameter settings. I deployed **Optuna** to run 50 Bayesian optimization trials.By using Tree-structured Parzen Estimators (TPE), the algorithm intelligently navigated learning rates, maximum tree depths, and L1/L2 regularization to find the mathematically optimal configurations .
 
 ### 🏆 The Ultimate Blend
-The overall winner wasn't a single model. [cite_start]By blending my tuned XGBoost (54%) and LightGBM (46%) models together, I created an optimized ensemble that captured market realities neither model could find alone[cite: 1011].
+The overall winner wasn't a single model.By blending my tuned XGBoost (54%) and LightGBM (46%) models together, I created an optimized ensemble that captured market realities neither model could find alone.
 
-* [cite_start]**$R^2$ Score:** **0.8019** (Predicting over 80% of the market variance!) [cite: 1011]
-* [cite_start]**Mean Absolute Error (MAE):** **$45.90** [cite: 1011]
-* [cite_start]**RMSE:** **$70.53** [cite: 1011]
+* **$R^2$ Score:** **0.8019** (Predicting over 80% of the market variance!
+* **Mean Absolute Error (MAE):** **$45.90** 
+* **RMSE:** **$70.53** 
 
 ### 🔬 Pushing the Limits: Deep Learning
-[cite_start]Just to see how far I could push it, I also built a custom 4-Layer Deep Manifold Neural Network (MLP Regressor) as a non-linear counterpart to the tree ensembles[cite: 1201]. [cite_start]I used **Swish activations** to handle complex non-linear mapping and a **Huber Loss Function** because it is mathematically robust against those rare, crazy $9,000 ticket anomalies[cite: 1239, 1247]. [cite_start]It achieved a highly competitive $49.12 MAE[cite: 1828]!
+Just to see how far I could push it, I also built a custom 4-Layer Deep Manifold Neural Network (MLP Regressor) as a non-linear counterpart to the tree ensembles. I used **Swish activations** to handle complex non-linear mapping and a **Huber Loss Function** because it is mathematically robust against those rare, crazy $9,000 ticket anomalies.It achieved a highly competitive $49.12 MAE!
 
 ---
 
 ## 📊 What Did the AI Actually Learn?
 An 80% accuracy score is great, but the real value is in *how* the model makes its decisions. By analyzing the feature importance, the data proved:
 
-* **Convenience > Distance:** You'd think physical mileage dictates the price, but it doesn't. [cite_start]The AI proved that convenience factors (specifically `Is_Nonstop` and `Arrives_Next_Day`) heavily outrank raw distance in driving price variations [cite: 1128-1131].
-* **The "Golden Window":** Prices don't just go up linearly. [cite_start]They actually stabilize in a sweet spot 21 to 45 days before departure[cite: 562]. 
-* [cite_start]**The Urgency Penalty:** If you book less than 14 days out, you trigger extreme inelastic surge pricing[cite: 563]. 
-* [cite_start]**The Sunday Surge:** Sunday is consistently the most expensive day to fly, while Tuesday and Wednesday offer the deepest market discounts[cite: 564, 566].
+* **Convenience > Distance:** You'd think physical mileage dictates the price, but it doesn't.The AI proved that convenience factors (specifically `Is_Nonstop` and `Arrives_Next_Day`) heavily outrank raw distance in driving price variations .
+* **The "Golden Window":** Prices don't just go up linearly. They actually stabilize in a sweet spot 21 to 45 days before departure. 
+* **The Urgency Penalty:** If you book less than 14 days out, you trigger extreme inelastic surge pricing. 
+* **The Sunday Surge:** Sunday is consistently the most expensive day to fly, while Tuesday and Wednesday offer the deepest market discounts.
 
 ---
 ## 🤝 Let's Connect & Collaborate!
@@ -67,3 +67,4 @@ If you found this project interesting, have feedback on the methodology, or just
 * **Issues & Pull Requests** are always welcome if you want to experiment with the dataset or tweak the ensemble blend.
 
 Thanks for stopping by, and happy coding.
+
